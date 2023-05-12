@@ -20,10 +20,9 @@ def auto_int(x):
 	return int(x, 0)
 
 def create_kernel_header(args):
-	out_file = open(args.header_file, "wb")
-	header = get_kernel_header(args)
-	out_file.write(header)
-	out_file.close()
+	with open(args.header_file, "wb") as out_file:
+		header = get_kernel_header(args)
+		out_file.write(header)
 
 def get_kernel_header(args):
 	header = bytearray([PADDING] * KERNEL_HEADER_SIZE)

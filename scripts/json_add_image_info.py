@@ -22,12 +22,11 @@ if not file_path.is_file():
 def get_titles():
     titles = []
     for prefix in ["", "ALT0_", "ALT1_", "ALT2_", "ALT3_", "ALT4_"]:
-        title = {}
-        for var in ["vendor", "model", "variant"]:
-            if getenv("DEVICE_{}{}".format(prefix, var.upper())):
-                title[var] = getenv("DEVICE_{}{}".format(prefix, var.upper()))
-
-        if title:
+        if title := {
+            var: getenv(f"DEVICE_{prefix}{var.upper()}")
+            for var in ["vendor", "model", "variant"]
+            if getenv(f"DEVICE_{prefix}{var.upper()}")
+        }:
             titles.append(title)
 
     if not titles:
@@ -39,16 +38,18 @@ def get_titles():
 device_id = getenv("DEVICE_ID")
 hash_file = hashlib.sha256(file_path.read_bytes()).hexdigest()
 
-if file_path.with_suffix(file_path.suffix + ".sha256sum").exists():
+if file_path.with_suffix(f"{file_path.suffix}.sha256sum").exists():
     hash_unsigned = (
-        file_path.with_suffix(file_path.suffix + ".sha256sum").read_text().strip()
+        file_path.with_suffix(f"{file_path.suffix}.sha256sum")
+        .read_text()
+        .strip()
     )
 else:
     hash_unsigned = hash_file
 
 file_info = {
     "metadata_version": 1,
-    "target": "{}/{}".format(getenv("TARGET"), getenv("SUBTARGET")),
+    "target": f'{getenv("TARGET")}/{getenv("SUBTARGET")}',
     "version_code": getenv("VERSION_CODE"),
     "version_number": getenv("VERSION_NUMBER"),
     "source_date_epoch": int(getenv("SOURCE_DATE_EPOCH")),

@@ -19,10 +19,9 @@ def auto_int(x):
 	return int(x, 0)
 
 def create_pid_file(args):
-	pid_file = open(args.pid_file, "wb")
-	buf = get_pid(args)
-	pid_file.write(buf)
-	pid_file.close()
+	with open(args.pid_file, "wb") as pid_file:
+		buf = get_pid(args)
+		pid_file.write(buf)
 
 def get_pid(args):
 	buf = bytearray([PADDING] * PID_SIZE)

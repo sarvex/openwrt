@@ -87,9 +87,9 @@ def checksum_header(buf):
     #     [...<ffffffff>...<OpenWrt><000000><CAMEOTAG><0001><checksum><InvCRC>]
     buf[UIMAGE_NAME_OFF:UIMAGE_NAME_END] = IMAGE_NAME + CAMEO_TAG
     buf[UIMAGE_CRC_OFF:UIMAGE_CRC_END] = CRC_FF
-    buf[UIMAGE_SUM_OFF:UIMAGE_SUM_END] = cameosum(buf[0:UIMAGE_NAME_END])
+    buf[UIMAGE_SUM_OFF:UIMAGE_SUM_END] = cameosum(buf[:UIMAGE_NAME_END])
     buf[UIMAGE_CRC_OFF:UIMAGE_CRC_END] = CRC_00
-    buf[UIMAGE_INV_OFF:UIMAGE_INV_END] = invertcrc(buf[0:UIMAGE_SUM_END])
+    buf[UIMAGE_INV_OFF:UIMAGE_INV_END] = invertcrc(buf[:UIMAGE_SUM_END])
     buf[UIMAGE_CRC_OFF:UIMAGE_CRC_END] = CRC_FF
     return buf
 

@@ -41,16 +41,15 @@ if len(args.signature) > SIGNATURE_LEN:
                      f"{SIGNATURE_LEN} bytes")
 
 if args.signature == "os":
-    if args.linux_loadaddr:
-        if len(args.linux_loadaddr) > LINUXLOAD_LEN:
-            raise ValueError(f"linux_loadaddr '{args.linux_loadaddr}' is greater"
-                             f"than {LINUXLOAD_LEN} bytes")
-        if (args.linux_loadaddr[0:2] != "0x"):
-            raise ValueError(f"linux_loadaddr '{args.linux_loadaddr}' must use"
-                             f"the 0x789ABCDE format")
-        int(args.linux_loadaddr[2:],16)
-    else:
-        raise ValueError(f"linux_loadaddr is required for signature 'os'")
+    if not args.linux_loadaddr:
+        raise ValueError("linux_loadaddr is required for signature 'os'")
+    if len(args.linux_loadaddr) > LINUXLOAD_LEN:
+        raise ValueError(f"linux_loadaddr '{args.linux_loadaddr}' is greater"
+                         f"than {LINUXLOAD_LEN} bytes")
+    if args.linux_loadaddr[:2] != "0x":
+        raise ValueError(f"linux_loadaddr '{args.linux_loadaddr}' must use"
+                         f"the 0x789ABCDE format")
+    int(args.linux_loadaddr[2:],16)
 else:
     args.linux_loadaddr = ""
 
@@ -80,7 +79,7 @@ args.dest_file.write(struct.pack('!2x'))
 
 args.source_file.seek(0)
 while True:
-    buf = args.source_file.read(BUFSIZE)
-    if not buf:
+    if buf := args.source_file.read(BUFSIZE):
+        args.dest_file.write(buf)
+    else:
         break
-    args.dest_file.write(buf)
